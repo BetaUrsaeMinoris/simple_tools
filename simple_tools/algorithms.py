@@ -184,3 +184,27 @@ def rc4_encrypt(plaintext: (bytes, str), key: (bytes, str)):
     if isinstance(plaintext, str):
         plaintext = plaintext.encode('utf-8')
     return ARC4.new(key).encrypt(plaintext)
+
+
+def aes_ctr_encrypt(plaintext: (str, bytes), key: (str, bytes), iv: (str, bytes)) -> bytes:
+    from Crypto.Cipher import AES
+    if isinstance(plaintext, str):
+        plaintext = plaintext.encode('utf-8')
+    if isinstance(key, str):
+        key = key.encode('utf-8')
+    if isinstance(iv, str):
+        iv = iv.encode('utf-8')
+    cipher = AES.new(key, mode=AES.MODE_CTR, initial_value=iv, nonce=b'')
+    return cipher.encrypt(plaintext)
+
+
+def aes_ctr_decrypt(ciphertext: (str, bytes), key: (str, bytes), iv: (str, bytes)) -> bytes:
+    from Crypto.Cipher import AES
+    if isinstance(ciphertext, str):
+        ciphertext = ciphertext.encode('utf-8')
+    if isinstance(key, str):
+        key = key.encode('utf-8')
+    if isinstance(iv, str):
+        iv = iv.encode('utf-8')
+    cipher = AES.new(key, mode=AES.MODE_CTR, initial_value=iv, nonce=b'')
+    return cipher.decrypt(ciphertext)

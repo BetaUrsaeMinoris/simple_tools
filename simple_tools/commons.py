@@ -192,7 +192,10 @@ def get_plugin_map(base_cls: type, filter_stems: tuple = None):
         filter_stems = '__init__', clc_file.stem
     for file in clc_file.parent.iterdir():
         if file.is_file() and file.suffix == '.py' and file.stem not in filter_stems:
-            importlib.import_module(f'{module}.{file.stem}')
+            try:
+                importlib.import_module(f'{module}.{file.stem}')
+            except Exception as e:
+                logger.exception(e)
     plugin_map = {}
 
     def fill_support_plugin(cls):

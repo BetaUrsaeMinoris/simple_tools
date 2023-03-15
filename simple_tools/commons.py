@@ -184,7 +184,6 @@ class FunctionResult(object):
         return _cache
 
 
-@FunctionResult.cache(365 * 24 * 60 * 60)
 def get_plugin_map(base_cls: type, filter_stems: tuple = None):
     module = base_cls.__module__
     clc_file = Path(inspect.getfile(base_cls))

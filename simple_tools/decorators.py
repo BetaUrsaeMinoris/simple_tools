@@ -131,3 +131,30 @@ def timer(func):
         return duration, result
 
     return _timer
+
+
+def forever(sleep_time: float = 60):
+    """
+    永不停止装饰器
+    :return:
+    """
+
+    def outer(func):
+
+        @functools.wraps(func)
+        def inner(*args, **kwargs):
+            if isinstance(sleep_time, (float, int)) and sleep_time > 0:
+                logger.info(f'{func.__name__} {sleep_time}s 后运行')
+                time.sleep(sleep_time)
+            else:
+                logger.info(f'{func.__name__} 正在运行')
+            while True:
+                try:
+                    func(*args, **kwargs)
+                except Exception as e:
+                    logger.exception(f'{func.__name__}程序异常: {e}')
+                time.sleep(sleep_time)
+
+        return inner
+
+    return outer

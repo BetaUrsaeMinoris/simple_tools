@@ -198,9 +198,6 @@ def get_plugin_map(base_cls: type, filter_stems: tuple = None):
     plugin_map = {}
 
     def fill_support_plugin(cls):
-        """
-        构造所有支持登录的网站
-        """
         for subclass in cls.__subclasses__():
             if subclass.__subclasses__():
                 fill_support_plugin(subclass)
@@ -215,6 +212,23 @@ def get_plugin_map(base_cls: type, filter_stems: tuple = None):
 
     fill_support_plugin(base_cls)
     return dict(sorted(plugin_map.items(), key=lambda x: x[0]))
+
+
+def get_subclasses(base_cls: type):
+    subclasses = {}
+
+    def fill_subclasses(cls):
+        for subclass in cls.__subclasses__():
+            if subclass.__subclasses__():
+                fill_subclasses(subclass)
+            else:
+                usable = getattr(subclass, 'usable', None)
+                if not usable:
+                    continue
+                subclasses[subclass.__name__] = subclass
+
+    fill_subclasses(base_cls)
+    return dict(sorted(subclasses.items(), key=lambda x: x[0]))
 
 
 class CPUTimer(object):

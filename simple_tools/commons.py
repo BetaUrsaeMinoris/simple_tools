@@ -23,7 +23,7 @@ from requests.utils import cookiejar_from_dict, dict_from_cookiejar
 
 from simple_tools.algorithms import md5
 
-logger = logging.getLogger(__name__)
+default_logger = logging.getLogger(__name__)
 
 
 def is_windows() -> bool:
@@ -184,9 +184,10 @@ class FunctionResult(object):
         return _cache
 
 
-def get_plugin_map(base_cls: type, filter_stems: tuple = None):
+def get_plugin_map(base_cls: type, filter_stems: tuple = None, **kwargs):
     module = base_cls.__module__
     clc_file = Path(inspect.getfile(base_cls))
+    logger = kwargs.get('logger') or default_logger
     if filter_stems is None:
         filter_stems = '__init__', clc_file.stem
     for file in clc_file.parent.iterdir():
@@ -238,10 +239,11 @@ class CPUTimer(object):
         CPU利用率 = CPU时间 / 运行时间 * 100%
     """
 
-    def __init__(self, tag: str = ''):
+    def __init__(self, tag: str = '', **kwargs):
         if tag:
             tag = f'<{tag}> '
         self.tag = tag
+        self.logger = kwargs.get('logger') or default_logger
 
     def __enter__(self):
         self.start = time.time()
@@ -253,7 +255,7 @@ class CPUTimer(object):
         self.end = time.time()
         thread_cpu_duration = self.thread_cpu_end - self.thread_cpu_start
         duration = self.end - self.start
-        logger.warning(
+        self.logger.warning(
             f'{self.tag}'
             f'CPU利用率: {round(100 * thread_cpu_duration / duration, 2)}%, '
             f'CPU时间: {round(thread_cpu_duration, 8)}, 运行时间: {round(duration, 8)}'
@@ -265,14 +267,15 @@ class Timer(object):
     计时器(上下文管理器)
     """
 
-    def __init__(self, tag: str = ''):
+    def __init__(self, tag: str = '', **kwargs):
         if tag:
             tag = f'<{tag}> '
         self.tag = tag
+        self.logger = kwargs.get('logger') or default_logger
 
     def __enter__(self):
         self.start = datetime.datetime.now().replace(microsecond=0)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.end = datetime.datetime.now().replace(microsecond=0)
-        logger.info(f'{self.tag}总共耗时: {self.end - self.start}')
+        self.logger.info(f'{self.tag}总共耗时: {self.end - self.start}')

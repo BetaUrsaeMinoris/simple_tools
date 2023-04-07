@@ -10,12 +10,13 @@ from functools import singledispatch
 from pathlib import Path
 from threading import Thread
 
-logger = logging.getLogger(__name__)
+default_logger = logging.getLogger(__name__)
 
 
 @singledispatch
 def circulate(*args, **kwargs):
     registers = [register.__name__ for register in circulate.registry if register.__name__ != 'object']
+    logger = kwargs.get('logger') or default_logger
     logger.info(f'请使用合适的参数, 如: {", ".join(registers)} 不能是: {args, kwargs}')
 
     def _circulate(func):
@@ -25,7 +26,7 @@ def circulate(*args, **kwargs):
 
 
 @circulate.register(Path)
-def circulate_register(file: Path, key: str = None, is_block: bool = True):
+def circulate_register(file: Path, key: str = None, is_block: bool = True, **keywords):
     """
     key为file的直接索引, 如: a或a.b.c.d
     :param file:
@@ -33,6 +34,7 @@ def circulate_register(file: Path, key: str = None, is_block: bool = True):
     :param is_block:
     :return:
     """
+    logger = keywords.get('logger') or default_logger
 
     def _circulate(func):
 
@@ -70,7 +72,9 @@ def circulate_register(file: Path, key: str = None, is_block: bool = True):
 
 
 @circulate.register(int)
-def circulate_register(sleep: int = 1, is_block: bool = True):
+def circulate_register(sleep: int = 1, is_block: bool = True, **keywords):
+    logger = keywords.get('logger') or default_logger
+
     def _circulate(func):
 
         @functools.wraps(func)
@@ -133,11 +137,12 @@ def timer(func):
     return _timer
 
 
-def forever(sleep_time: float = 60):
+def forever(sleep_time: float = 60, **keywords):
     """
     永不停止装饰器
     :return:
     """
+    logger = keywords.get('logger') or default_logger
 
     def outer(func):
 

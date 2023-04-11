@@ -5,6 +5,7 @@
 from setuptools import setup
 
 import simple_tools
+from simple_tools.commons import IS_WINDOWS
 
 setup(
     name='simple_tools',
@@ -17,7 +18,7 @@ setup(
         'PyExecJS==1.5.1',
         'pymongo==3.6.1',
         'redis==2.10.6',
-        'requests==2.18.0',
+        f'requests{[">", "="][IS_WINDOWS]}=2.18.0',
     ],
     description='some simple but useful tools',
     long_description='some simple but useful tools',

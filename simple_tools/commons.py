@@ -184,13 +184,16 @@ class FunctionResult(object):
         return _cache
 
 
-def get_plugin_map(base_cls: type, filter_stems: tuple = None, **kwargs):
-    module = base_cls.__module__
-    clc_file = Path(inspect.getfile(base_cls))
+def get_plugin_map(base_cls: type, filter_stems: tuple = None, module: str = None, **kwargs):
+    cls_file = Path(inspect.getfile(base_cls))
+    if module is None:
+        module = base_cls.__module__
+        if cls_file.stem != '__init__' and module[-len(cls_file.stem):] == cls_file.stem:
+            module = module[:-len(cls_file.stem) - 1]
     logger = kwargs.get('logger') or default_logger
     if filter_stems is None:
-        filter_stems = '__init__', clc_file.stem
-    for file in clc_file.parent.iterdir():
+        filter_stems = '__init__', cls_file.stem
+    for file in cls_file.parent.iterdir():
         if file.is_file() and file.suffix == '.py' and file.stem not in filter_stems:
             try:
                 importlib.import_module(f'{module}.{file.stem}')

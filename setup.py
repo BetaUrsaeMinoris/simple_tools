@@ -18,7 +18,7 @@ setup(
         'PyExecJS==1.5.1',
         'pymongo==3.6.1',
         'redis==2.10.6',
-        f'requests{[">", "="][IS_WINDOWS]}=2.18.0',
+        f'requests=={["2.26.0", "2.18.0"][IS_WINDOWS]}',
     ],
     description='some simple but useful tools',
     long_description='some simple but useful tools',

@@ -180,6 +180,21 @@ def rsa_public_key_decrypt(public_key: str, ciphertext: str) -> str:
     return plaintext
 
 
+def rsa_public_key_decrypt_by_js(public_key: str, ciphertext: str, padding: str = 'pkcs1') -> str:
+    import execjs
+    if not hasattr(rsa_public_key_decrypt, 'code'):
+        rsa_public_key_decrypt.code = '''
+            const NodeRSA = require('node-rsa');
+            function decrypt(public_key, ciphertext, padding){
+                var key = new NodeRSA("-----BEGIN PUBLIC KEY-----" + public_key	+ "-----END PUBLIC KEY-----");
+                key.setOptions({encryptionScheme: padding});
+                return key.decryptPublic(ciphertext, 'base64', 'utf8');
+            }'''
+        rsa_public_key_decrypt.compiler = execjs.compile(rsa_public_key_decrypt.code)
+    encode_text = rsa_public_key_decrypt.compiler.call('decrypt', public_key, ciphertext, padding)
+    return base64.b64decode(encode_text).decode('utf-8')
+
+
 def rsa_public_key_encrypt(public_key: str, plaintext: str) -> str:
     return rsa_encrypt(plaintext, f"-----BEGIN PUBLIC KEY-----\n{public_key}\n-----END PUBLIC KEY-----")
 

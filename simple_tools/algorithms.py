@@ -170,14 +170,29 @@ def rsa_encrypt(message: str, public_key: str) -> str:
 
 def rsa_public_key_decrypt(public_key: str, ciphertext: str) -> str:
     # RSA 公钥解密
+    # RSA 加密只跟e, n有关, ciphertext = pow(plaintext, e, n)
+    # RSA 解密只和d, n有关, plaintext = pow(ciphertext, d, n)
+    # 所有n和ciphertext/plaintext字节必须保持一致
+    # 如n为2048位, 即256字节
+    # ciphertext为512字节, 则必须切分为两组, 才能进行pow运算
+    # plaintext为260字节, 则必须切分为两组, 每组必须填充到256字节
     import rsa
     pem_public_key = f"-----BEGIN PUBLIC KEY-----\n{public_key}\n-----END PUBLIC KEY-----"
-    key = rsa.PublicKey.load_pkcs1_openssl_pem(pem_public_key.encode(encoding='utf-8'))
-    cipher_int = rsa.transform.bytes2int(base64.b64decode(ciphertext))
-    plain_int = rsa.transform.int2bytes(rsa.core.decrypt_int(cipher_int, key.e, key.n))
-    index = plain_int.index(b"\x00", 2)
-    plaintext = plain_int[index + 1:].decode(encoding='utf-8')
-    return plaintext
+    pk = rsa.PublicKey.load_pkcs1_openssl_pem(pem_public_key.encode(encoding='utf-8'))
+    batch_size = math.ceil(pk.n.bit_length() / 8)
+    ciphertext = base64.b64decode(ciphertext)
+    if len(ciphertext) % batch_size:
+        raise ValueError("ciphertext length error!")
+    plaintext = b''
+    for start in range(0, len(ciphertext), batch_size):
+        pt = pow(
+            int.from_bytes(ciphertext[start:start + batch_size], byteorder='big'),
+            pk.e,
+            pk.n
+        ).to_bytes(batch_size, byteorder='big')
+        index = pt.index(b"\x00", 2)
+        plaintext += pt[index + 1:]
+    return plaintext.decode(encoding='utf-8')
 
 
 def rsa_public_key_decrypt_by_js(public_key: str, ciphertext: str, padding: str = 'pkcs1') -> str:

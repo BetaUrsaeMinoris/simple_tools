@@ -33,6 +33,10 @@ def is_windows() -> bool:
 IS_WINDOWS = is_windows()
 
 
+def get_domain_ip(domain: str) -> str:
+    return socket.gethostbyname(domain)
+
+
 def _get_extranet_ip() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.connect(('8.8.8.8', 80))

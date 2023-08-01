@@ -2,10 +2,11 @@
 # @Author      : LJQ
 # @Time        : 2023/3/10 17:20
 # @Version     : Python 3.6.4
+import platform
+
 from setuptools import setup
 
 import simple_tools
-from simple_tools.commons import IS_WINDOWS
 
 setup(
     name='simple_tools',
@@ -18,7 +19,7 @@ setup(
         'PyExecJS==1.5.1',
         'pymongo==3.6.1',
         'redis==2.10.6',
-        f'requests=={["2.26.0", "2.18.0"][IS_WINDOWS]}',
+        f'requests=={["2.26.0", "2.18.0"][platform.system().lower() == "windows"]}',
         'rsa==4.0',
     ],
     description='some simple but useful tools',

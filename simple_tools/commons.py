@@ -286,3 +286,28 @@ class Timer(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.end = datetime.datetime.now().replace(microsecond=0)
         self.logger.info(f'{self.tag}总共耗时: {self.end - self.start}')
+
+
+class FrequencyLogger(logging.Logger):
+    """
+    频率日志
+
+    控制当前行的日志输出频率
+    """
+    intervals = {}
+
+    def _log(self, level, msg, args, exc_info=None, extra=None, stack_info=False, interval: int = 0):
+        if interval > 0:
+            try:
+                fn, lno, func, sinfo = self.findCaller(stack_info)
+            except ValueError:
+                pass
+            else:
+                key = fn, lno
+                last_time = self.intervals.get(key, 0)
+                cur_time = time.time()
+                if cur_time - last_time < interval:
+                    return
+                self.intervals[key] = cur_time
+
+        super()._log(level, msg, args, exc_info, extra, stack_info)

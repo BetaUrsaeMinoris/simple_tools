@@ -16,9 +16,6 @@ setup(
     author='lijinquan123',
     install_requires=[
         'pycryptodome==3.11.0',
-        'PyExecJS==1.5.1',
-        'pymongo==3.6.1',
-        'redis==2.10.6',
         f'requests=={["2.26.0", "2.18.0"][platform.system().lower() == "windows"]}',
         'rsa==4.0',
     ],
@@ -26,6 +23,7 @@ setup(
     long_description='some simple but useful tools',
     packages=['simple_tools'],
     include_package_data=True,
+    package_data={"simple_tools": ["binaries/*"]},
     platforms='any',
     classifiers=[
         'Development Status :: 4 - Beta',

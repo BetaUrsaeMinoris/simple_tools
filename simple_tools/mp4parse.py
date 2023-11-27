@@ -38,14 +38,17 @@ def mp4dump(file: str):
 def get_kids(mp4struct: dict) -> list:
     """值为空表示不存在 kid """
     kids = []
-    kids_path = ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsd', 'encv', 'sinf', 'schi', 'tenc']
+    kids_path = ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsd', ['encv', 'enca'], 'sinf', 'schi', 'tenc']
     if f"'{kids_path[-1]}'" not in str(mp4struct):
         return kids
     while kids_path[:-1]:
         p = kids_path.pop(0)
         children = mp4struct['children'] if 'children' in mp4struct else mp4struct
         for child in children:
-            if p == child['name']:
+            if (
+                    (isinstance(p, str) and child['name'] == p)
+                    or (isinstance(p, list) and child['name'] in p)
+            ):
                 mp4struct = child
                 break
     for child in mp4struct['children']:

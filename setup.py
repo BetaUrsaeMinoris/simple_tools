@@ -8,17 +8,19 @@ from setuptools import setup
 
 import simple_tools
 
+install_requires = [
+    'pycryptodome==3.11.0',
+    'rsa==4.0',
+]
+if platform.system().lower() == "windows":
+    install_requires.append('requests==2.18.0')
 setup(
     name='simple_tools',
     version=simple_tools.__version__,
     url='https://github.com/lijinquan123/simple_tools/',
     license='MIT License',
     author='lijinquan123',
-    install_requires=[
-        'pycryptodome==3.11.0',
-        f'requests=={["2.26.0", "2.18.0"][platform.system().lower() == "windows"]}',
-        'rsa==4.0',
-    ],
+    install_requires=install_requires,
     description='some simple but useful tools',
     long_description='some simple but useful tools',
     packages=['simple_tools'],

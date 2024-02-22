@@ -2,18 +2,18 @@
 # @Author      : LJQ
 # @Time        : 2023/3/10 17:20
 # @Version     : Python 3.6.4
-import platform
-
 from setuptools import setup
 
 import simple_tools
 
 install_requires = [
-    'pycryptodome==3.11.0',
-    'rsa==4.0',
+    # 'pycryptodome',
+    # 'pyexecjs',
+    # 'pymongo',
+    # 'redis',
+    'requests',
+    # 'rsa',
 ]
-if platform.system().lower() == "windows":
-    install_requires.append('requests==2.18.0')
 setup(
     name='simple_tools',
     version=simple_tools.__version__,
@@ -37,7 +37,7 @@ setup(
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.11.7',
         'Programming Language :: Python',
         'Topic :: Utilities',
     ],

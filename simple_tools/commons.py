@@ -302,10 +302,10 @@ class FrequencyLogger(logging.Logger):
     """
     intervals = {}
 
-    def _log(self, level, msg, args, exc_info=None, extra=None, stack_info=False, interval: int = 0):
+    def _log(self, level, msg, args, exc_info=None, extra=None, stack_info=False, stacklevel=2, interval: int = 0):
         if interval > 0:
             try:
-                fn, lno, func, sinfo = self.findCaller(stack_info)
+                fn, lno, func, sinfo = self.findCaller(stack_info, stacklevel)
             except ValueError:
                 pass
             else:
@@ -316,4 +316,4 @@ class FrequencyLogger(logging.Logger):
                     return
                 self.intervals[key] = cur_time
 
-        super()._log(level, msg, args, exc_info, extra, stack_info)
+        super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)

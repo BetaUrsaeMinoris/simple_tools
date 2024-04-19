@@ -33,6 +33,26 @@ def is_windows() -> bool:
 IS_WINDOWS = is_windows()
 
 
+def fix_filename(filename: str, pairs: list = None):
+    if not pairs:
+        pairs = [
+            ('/', '／'),
+            # 文件名允许有网址
+            # ('.', '。'),
+            ('\\', '＼'),
+            ('?', '？'),
+            ('*', '＊'),
+            (':', '：'),
+            ('"', '“'),
+            ('<', '＜'),
+            ('>', '＞'),
+            ('|', '｜'),
+        ]
+    for pair in pairs:
+        filename = filename.replace(*pair)
+    return filename
+
+
 def get_domain_ip(domain: str) -> str:
     return socket.gethostbyname(domain)
 

@@ -26,6 +26,20 @@ from simple_tools.algorithms import md5
 default_logger = logging.getLogger(__name__)
 
 
+def codeblock_execute_limit(times: int = 1):
+    """代码块执行次数限制,默认只执行1次"""
+    if not hasattr(codeblock_execute_limit, 'codeblocks'):
+        setattr(codeblock_execute_limit, 'codeblocks', {})
+
+    f = sys._getframe(1)
+    k = f'{f.f_code.co_filename}:{f.f_lineno}'
+    codeblocks = getattr(codeblock_execute_limit, 'codeblocks')
+    if (cur_times := codeblocks.get(k, 0)) >= times:
+        return False
+    codeblocks[k] = cur_times + 1
+    return True
+
+
 def is_windows() -> bool:
     return platform.system().lower() == 'windows'
 

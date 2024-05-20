@@ -40,6 +40,22 @@ def codeblock_execute_limit(times: int = 1):
     return True
 
 
+def locale_compare(strings: str):
+    # 实现JavaScript中的localeCompare
+    # 符号 < 0-9 < a < A < ... < z < Z
+    oxs = []
+    for x in strings:
+        ox = ord(x)
+        if 48 <= ox <= 57:
+            ox = ox + 1000
+        elif 97 <= ox <= 122:
+            ox = ox + 2000 - 32.5
+        elif 65 <= ox <= 90:
+            ox = ox + 2000
+        oxs.append(ox)
+    return oxs
+
+
 def is_windows() -> bool:
     return platform.system().lower() == 'windows'
 

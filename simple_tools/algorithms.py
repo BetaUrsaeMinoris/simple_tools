@@ -7,6 +7,10 @@ import hashlib
 import math
 
 
+def base64decode(data: str) -> bytes:
+    return base64.b64decode(data + "=" * (4 - len(data) % 4))
+
+
 # HMAC
 def hmac(key: (str, bytes), message: (str, bytes), digestmod=hashlib.sha256) -> str:
     import hmac

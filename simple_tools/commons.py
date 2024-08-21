@@ -367,3 +367,45 @@ class FrequencyLogger(logging.Logger):
                 self.intervals[key] = cur_time
 
         super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
+
+
+class TestFrequencyLogger(FrequencyLogger):
+    """
+    频率日志测试版
+
+    控制当前行的日志输出频率
+    """
+
+    def _log(self, level, msg, args, exc_info=None, extra=None, stack_info=False, stacklevel=2, interval: int = 0):
+        super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel, 0)
+
+
+def read_backwards_nt(filepath: str, n: int = 1000, block_size: int = 1024, encoding='utf-8'):
+    """从后向前读取文件行内容"""
+    # 适用于文件行数超过`一百万`,读取不超过`一千`的情况
+    with open(filepath, 'rb') as file:
+        file.seek(0, 2)  # 移动到文件末尾
+        end = file.tell()  # 获取文件大小（字节数）
+        lines = []
+        buffer = bytearray()
+
+        while len(lines) <= n and end > 0:
+            size = min(block_size, end)
+            end -= size
+            file.seek(end)
+            buffer = file.read(size) + buffer
+            lines = buffer.split(b'\n')
+
+        # 处理结果
+        last_lines = lines[-n:] if len(lines) > n else lines
+    return [line.decode(encoding) for line in last_lines]
+
+
+def read_backwards_posix(filepath: str, n: int = 1000) -> list:
+    """从后向前读取文件行内容"""
+    command = f'tail -n {n} "{filepath}"'
+    result = os.popen(command).read()
+    return result.splitlines()
+
+
+read_backwards = read_backwards_posix if os.name == 'posix' else read_backwards_nt

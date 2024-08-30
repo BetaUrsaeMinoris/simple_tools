@@ -17,6 +17,7 @@ import sys
 import threading
 import time
 from pathlib import Path
+from urllib.parse import urlparse
 
 from requests.cookies import RequestsCookieJar
 from requests.utils import cookiejar_from_dict, dict_from_cookiejar
@@ -409,3 +410,7 @@ def read_backwards_posix(filepath: str, n: int = 1000) -> list:
 
 
 read_backwards = read_backwards_posix if os.name == 'posix' else read_backwards_nt
+
+
+def change_url_to_file(url: str) -> Path:
+    return Path(urlparse(url).path)

@@ -22,8 +22,6 @@ from urllib.parse import urlparse
 from requests.cookies import RequestsCookieJar
 from requests.utils import cookiejar_from_dict, dict_from_cookiejar
 
-from simple_tools.algorithms import md5
-
 default_logger = logging.getLogger(__name__)
 
 
@@ -132,24 +130,6 @@ def ciphers(length: int, base: str = '0123456789abcdef') -> str:
 
 def build_key(provider: str = '', unique_id: str = '', suffix: str = ''):
     return '_'.join(filter(bool, [provider, unique_id, suffix]))
-
-
-def has_drm_decrypted(encrypt_file: str, decrypt_file: str):
-    # AES-CBC模式必须使用填充,因此加密后的文件长度比解密的文件长度大.
-    # AES-CTR模式不使用填充,因此加密后的文件长度和解密的文件长度相同.
-    # 因此通过`截取文件后10M并比较MD5值`的方式来判断是否解密成功
-    encrypt_size = os.path.getsize(encrypt_file)
-    decrypt_size = os.path.getsize(decrypt_file)
-    if encrypt_size != decrypt_size:
-        return True
-    read_size = 10 * 1024 * 1024
-    with open(encrypt_file, mode='rb') as f:
-        f.seek(max(0, encrypt_size - read_size))
-        encrypt_md5 = md5(f.read())
-    with open(decrypt_file, mode='rb') as f:
-        f.seek(max(0, decrypt_size - read_size))
-        decrypt_md5 = md5(f.read())
-    return encrypt_md5 != decrypt_md5
 
 
 class CookieConverter(object):

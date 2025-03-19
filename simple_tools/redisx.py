@@ -40,12 +40,17 @@ else:
 
 
     class _RedisClient(metaclass=FlyWeight):
-        def __init__(self, host, port, db, password: str = None):
+        def __init__(self, url: str):
             self.redis = CustomRedis(
-                connection_pool=redis.ConnectionPool(host=host, port=port, db=db, password=password,
-                                                     decode_responses=True)
+                connection_pool=redis.ConnectionPool.from_url(url, decode_responses=True)
             )
 
 
-    def client(host: str, db: int, password: str = None) -> redis.Redis:
-        return _RedisClient(host, 6379, db, password).redis
+    def client(
+            host: str = '127.0.0.1', db: int = 0, password: str = '', port: int = 6379,
+            *,
+            url: str = None
+    ) -> redis.Redis:
+        if not url:
+            url = f"redis://:{password}@{host}:{port}/{db}"
+        return _RedisClient(url).redis
